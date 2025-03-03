@@ -1,0 +1,31 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "*.html",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "*.json",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "image/**",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/",
+      "dest": "/index.html"
+    },
+    {
+      "src": "/animation.json",
+      "dest": "/animation.json"
+    },
+    {
+      "src": "/image/(.*)",
+      "dest": "/image/$1"
+    }
+  ]
+}

@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday Celebration</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap');
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Geist", sans-serif
+        }
+        
+        body {
+            background-color: #0a1a15;
+            color: #fff;
+            background-image: radial-gradient(circle at 50% 50%, rgba(0, 255, 191, 0.1), transparent 70%);
+            overflow-x: hidden;
+        }
+        
+        .minimal-header {
+            display: flex;
+            align-items: center;
+            padding: 15px 40px;
+            background: rgba(0, 0, 0, 0.3);
+            position: relative;
+            z-index: 10;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .logo span {
+            font-weight: 600;
+            color: #fff;
+            font-size: 18px;
+        }
+        
+        .hero  {
+            text-align: center;
+            padding: 100px 20px 60px;
+            position: relative;
+            z-index: 5;
+        }
+        .hero .date{
+            color: hsl(72, 100%, 70%);
+        }
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+        
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .minimal-header {
+                padding: 15px 20px;
+            }
+        }
+        
+        .highlight {
+            color: #00e5b0;
+            font-style: italic;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin: 0 auto 30px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 14px;
+        }
+        
+        .btn-primary {
+            background-color: #00e5b0;
+            color: #000;
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 60px;
+            margin: 60px 0;
+            flex-wrap: wrap;
+            position: relative;
+            z-index: 5;
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .section {
+            padding: 60px 20px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .section-title {
+            font-size: 2rem;
+            margin-bottom: 40px;
+            display: inline-block;
+        }
+        
+        .section-title span {
+            color: #00e5b0;
+        }
+        
+        .video-section {
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+        }
+        
+        .video-container {
+            position: relative;
+            width: 100%;
+            height: 0;
+            padding-bottom: 56.25%;
+            background-color: transparent;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        canvas#lottie-canvas {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        
+        .play-button {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 60px;
+            height: 60px;
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .play-button::after {
+            content: "";
+            width: 0;
+            height: 0;
+            border-top: 10px solid transparent;
+            border-left: 18px solid #fff;
+            border-bottom: 10px solid transparent;
+            margin-left: 4px;
+        }
+        
+        .cards-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 0 auto;
+            max-width: 1200px;
+        }
+        
+        .card {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .card-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+        
+        .card-content {
+            padding: 20px;
+            text-align: left;
+        }
+        
+        .card-title {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            color: #fff;
+        }
+        
+        .card-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .price-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 15px 0;
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 1px solid #00e5b0;
+            color: #00e5b0;
+        }
+        
+        /* Updated Photo Gallery with Masonry Layout */
+        .gallery-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .gallery-grid {
+            columns: 5;
+            column-gap: 10px;
+        }
+        
+        @media (max-width: 1024px) {
+            .gallery-grid {
+                columns: 3;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .gallery-grid {
+                columns: 2;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .gallery-grid {
+                columns: 2; /* Keep 2 columns even on mobile */
+            }
+        }
+        
+        .gallery-item {
+            break-inside: avoid;
+            margin-bottom: 10px;
+            position: relative;
+            overflow: hidden;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+        
+        .gallery-image {
+            width: 100%;
+            height: 250px; /* Fixed height for consistency */
+            object-fit: cover; /* This ensures images cover the area without distortion */
+            display: block;
+            transition: transform 0.5s ease;
+        }
+        
+        /* Different heights for visual interest */
+        .gallery-item:nth-child(3n) .gallery-image {
+            height: 180px;
+        }
+        
+        .gallery-item:nth-child(4n) .gallery-image {
+            height: 300px;
+        }
+        
+        .gallery-item:nth-child(5n) .gallery-image {
+            height: 220px;
+        }
+        
+        .gallery-item:hover {
+            transform: scale(1.02);
+        }
+        
+        .copyright {
+            text-align: center;
+            padding: 20px;
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.5);
+            position: relative;
+            z-index: 2;
+        }
+        
+        .gem-message {
+            padding: 100px 20px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .gem-content {
+            max-width: 1000px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+         
+        }
+        
+        .gem-title {
+            font-size: 60px;
+            font-weight: 600;
+            color: #00e5b0;
+            letter-spacing: -2px;
+            margin-bottom: 40px;
+        }
+        
+        .gem-text {
+            font-size: clamp(1.2rem, 3vw, 1.8rem);
+            font-weight: 300;
+            color: #64748b;
+            margin-bottom: 30px;
+            letter-spacing: 1px;
+            color: white;
+        }
+        
+        .gem-text span {
+            display: block;
+            margin: 15px 0;
+            font-family: 'Georgia', serif;
+            font-style: italic;
+            color: #0ea5e9;
+            color: white;
+        }
+       
+        .gem-sparkle {
+            font-size: 3rem;
+            margin-top: 30px;
+            display: inline-block;
+            background: linear-gradient(45deg, #00e5b0, #0ea5e9);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        /* Decorative elements */
+        .gem-message::before,
+        .gem-message::after {
+            content: '✦';
+            position: absolute;
+            font-size: 2rem;
+            opacity: 0.2;
+            color: #00e5b0;
+        }
+        
+        .gem-message::before {
+            top: 20%;
+            left: 15%;
+            animation: float 4s ease-in-out infinite;
+        }
+        
+        .gem-message::after {
+            bottom: 20%;
+            right: 15%;
+            animation: float 5s ease-in-out infinite;
+        }
+        
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(5deg); }
+        }
+        
+        @media (max-width: 768px) {
+            .gem-message {
+                padding: 60px 20px;
+            }
+            
+            .gem-title {
+                margin-bottom: 30px;
+            }
+            
+            .gem-text {
+                padding: 0 15px;
+            }
+        }
+
+        /* P5.js canvas positioning */
+        #p5-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 600px; /* Set height to cover header and hero */
+            z-index: 1; /* Place below content but above background */
+            pointer-events: none; /* Let clicks pass through */
+        }
+    </style>
+</head>
+<body>
+    <!-- P5.js container -->
+    <div id="p5-container"></div>
+    
+
+    <header class="minimal-header">
+        <div class="logo">
+            <span>🎂 Aastha Birthday</span> 
+        </div>
+    </header>
+
+    <section class="hero">
+        <h1 class="date">Date 3 March,</h1>
+        <h1>We are celebrating<br>a <span class="highlight">special</span> birthday</h1>
+        <p class="subtitle">Join us to celebrate this amazing day and create unforgettable memories together as we honor someone truly extraordinary.</p>
+        <button class="btn btn-primary">See Birthday Details</button>
+    </section>
+
+    <div class="stats">
+        <div class="stat-item">
+            <div class="stat-number">18></div>
+            <div class="stat-label">Birthday Moments</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-number">20kg</div>
+            <div class="stat-label">Stomach Fat</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-number">100+</div>
+            <div class="stat-label">Aalu</div>
+        </div>
+    </div>
+
+    <section class="section">
+        <h2 class="section-title">we want to make you feel <span>special</span>.</h2>
+        <div class="video-section">
+            <div class="video-container">
+                <canvas id="lottie-canvas" width="800" height="450"></canvas>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <h2 class="section-title">17 => 18 <span>Moments</span>.</h2>
+        <div class="cards-container">
+            <div class="card">
+                <img src="./image/asthaAdventature.jpg" alt="Childhood memories" class="card-image">
+                <div class="card-content">
+                    <h3 class="card-title">Childhood Adventures</h3>
+                    <div class="card-info">
+                        <span>MEMORIES</span>
+                    </div>
+                    <p>Remembering the fun times we had growing up together and all the adventures we shared.</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <img src="./image/asthaParty.jpg" alt="Teenage years" class="card-image">
+                <div class="card-content">
+                    <h3 class="card-title">Party with Aalu for Bada Leda</h3>
+                    <div class="card-info">
+                        <span>PARTY</span>
+                    </div>
+                    <p>From school days to first celebrations, these years shaped our bond forever.</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <img src="./image/asthaPrize.jpg" alt="Special achievements" class="card-image">
+                <div class="card-content">
+                    <h3 class="card-title">Award Achievements</h3>
+                    <div class="card-info">
+                        <span>CELEBRATIONS</span>
+                    </div>
+                    <p>Celebrating all your accomplishments and the amazing person you've become.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="gem-message">
+        <div class="gem-content">
+            <h2 class="gem-title">Precious Gem</h2>
+            <p class="gem-text">
+                <span>"Like a diamond formed under pressure, you emerged into this world"</span>
+                Each moment since your birth has added to your brilliance
+                Every year has polished a new facet of your characte
+                Making you the remarkable person you are today.
+            </p>
+            <div class="gem-sparkle">✧</div>
+        </div>
+    </section>
+
+    <section class="gem-message">
+        <div class="gem-content">
+            <h2 class="gem-title">Determined</h2>
+            <p class="gem-text">
+                <span>"Every obstacle became a stepping stone"</span>
+                Your journey to become a doctor wasn't just a dream
+                It was a promise you made to yourself and kept
+                Now wearing that white coat with pride and purpose.
+            </p>
+        </div>
+    </section>
+
+    <section class="gem-message">
+        <div class="gem-content">
+        <h2 class="gem-title">Inspiring</h2>
+        <p class="gem-text">
+            <span>"Your story is a beacon of hope"</span>
+            From facing family challenges to achieving your goals
+            You've shown that with determination and courage
+            Any mountain can be climbed, any dream achieved.
+        </p>
+    </div>
+    </section>
+
+    <section class="gem-message">
+        <div class="gem-content">
+        <h2 class="gem-title">Guardian Angel</h2>
+        <p class="gem-text">
+            <span>"A mother's love lives forever in her child's heart"</span>
+            Though you're not here to hold my hand today
+            Your love guides every step of my way
+            Your strength flows through my veins
+            Your dreams live on in my achievements.
+        </p>
+        <div class="tribute-symbol">❀</div>
+    </div>
+    </section>
+
+    <section class="section">
+        <h2 class="section-title">Your <span>All Memory</span>.</h2>
+        <div class="gallery-container">
+            <div class="gallery-grid">
+                <div class="gallery-item">
+                    <img src="./image/astha1.jpg" alt="Birthday memory 1" class="gallery-image">
+                </div>
+                <div class="gallery-item">
+                    <img src="./image/astha2.jpg" alt="Birthday memory 2" class="gallery-image">
+                </div>
+                <div class="gallery-item">
+                    <img src="./image/astha3.jpg" alt="Birthday memory 3" class="gallery-image">
+                </div>
+                <div class="gallery-item">
+                    <img src="./image/astha4.jpg" alt="Birthday memory 4" class="gallery-image">
+                </div>
+                <div class="gallery-item">
+                    <img src="./image/astha5.jpg" alt="Birthday memory 5" class="gallery-image">
+                </div>
+                <div class="gallery-item">
+                    <img src="./image/astha6.jpg" alt="Birthday memory 6" class="gallery-image">
+                </div>
+                <div class="gallery-item">
+                    <img src="./image/astha7.jpg" alt="Birthday memory 7" class="gallery-image">
+                </div>
+                <div class="gallery-item">
+                    <img src="./image/astha8.jpg" alt="Birthday memory 8" class="gallery-image">
+                </div>
+                <div class="gallery-item">
+                    <img src="./image/astha9.jpg" alt="Birthday memory 9" class="gallery-image">
+                </div>
+                <div class="gallery-item">
+                    <img src="./image/astha10.jpg" alt="Birthday memory 10" class="gallery-image">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="bottom-mask"></div>
+    
+    <div class="copyright">
+        <p>Made with ❤️ for the special birthday | 2025</p>
+    </div>
+
+    <script type="module">
+        import { DotLottie } from "https://cdn.jsdelivr.net/npm/@lottiefiles/dotlottie-web/+esm";
+
+        new DotLottie({
+            autoplay: true,
+            loop: true,
+            canvas: document.getElementById("lottie-canvas"),
+            src: "./animation.json", // replace with your .lottie or .json file URL
+        });
+    </script>
+    
+    <script>
+        // P5.js sketch with balloons, ribbons, and confetti
+        let balloons = [];
+        let ribbons = [];
+        let confetti = [];
+        let p5Canvas;
+        
+        function setup() {
+            // Create canvas inside the p5-container
+            p5Canvas = createCanvas(windowWidth, 600);
+            p5Canvas.parent('p5-container');
+            
+            // Create initial balloons
+            for (let i = 0; i < 15; i++) {
+                createBalloon();
+            }
+            
+            // Create initial confetti
+            for (let i = 0; i < 100; i++) {
+                confetti.push(new Confetti());
+            }
+        }
+        
+        function draw() {
+            clear(); // Use clear instead of background for transparency
+            
+            // Update and display balloons
+            for (let i = balloons.length - 1; i >= 0; i--) {
+                balloons[i].update();
+                balloons[i].display();
+                
+                // Remove balloons that go off screen
+                if (balloons[i].pos.y < -100) {
+                    balloons.splice(i, 1);
+                    // Create a new balloon to replace it
+                    if (random() > 0.5) {
+                        createBalloon();
+                    }
+                }
+            }
+            
+            // Update and display ribbons
+            for (let i = ribbons.length - 1; i >= 0; i--) {
+                ribbons[i].update();
+                ribbons[i].display();
+                
+                // Remove ribbons that go off screen
+                if (ribbons[i].y > height + 100) {
+                    ribbons.splice(i, 1);
+                }
+            }
+            
+            // Update and display confetti
+            for (let i = confetti.length - 1; i >= 0; i--) {
+                confetti[i].update();
+                confetti[i].display();
+                
+                // Reset confetti that go off screen
+                if (confetti[i].pos.y > height) {
+                    confetti[i].reset();
+                }
+            }
+            
+            // Occasionally add new ribbons
+            if (frameCount % 20 === 0 && random() > 0.7) {
+                ribbons.push(new Ribbon());
+            }
+        }
+        
+        function windowResized() {
+            resizeCanvas(windowWidth, 600);
+        }
+        
+        function createBalloon() {
+            balloons.push(new Balloon());
+        }
+        
+        // Balloon class
+        class Balloon {
+            constructor() {
+                this.pos = createVector(random(width), height + random(50, 150));
+                this.vel = createVector(random(-0.5, 0.5), random(-2, -1));
+                this.size = random(30, 70);
+                this.color = color(
+                    random(100, 255),
+                    random(100, 255),
+                    random(100, 255),
+                    200
+                );
+                this.stringLength = random(50, 100);
+                this.wobble = 0;
+                this.wobbleSpeed = random(0.03, 0.07);
+            }
+            
+            update() {
+                this.pos.add(this.vel);
+                this.wobble += this.wobbleSpeed;
+                
+                // Add some gentle side-to-side movement
+                this.pos.x += sin(this.wobble) * 0.5;
+            }
+            
+            display() {
+                push();
+                noStroke();
+                
+                // Draw balloon string
+                stroke(255, 255, 255, 150);
+                strokeWeight(1.5);
+                let stringEndX = this.pos.x;
+                let stringEndY = this.pos.y + this.stringLength;
+                
+                // Add a slight curve to the string
+                let ctrlPointX = this.pos.x + sin(this.wobble) * 10;
+                let ctrlPointY = this.pos.y + this.stringLength * 0.5;
+                
+                noFill();
+                beginShape();
+                vertex(this.pos.x, this.pos.y + this.size/2);
+                bezierVertex(
+                    ctrlPointX, ctrlPointY,
+                    ctrlPointX, ctrlPointY,
+                    stringEndX, stringEndY
+                );
+                endShape();
+                
+                // Draw balloon
+                noStroke();
+                fill(this.color);
+                ellipse(this.pos.x, this.pos.y, this.size, this.size * 1.2);
+                
+                // Draw balloon knot
+                fill(this.color);
+                ellipse(stringEndX, stringEndY - 3, 5, 5);
+                
+                // Draw balloon highlight
+                fill(255, 255, 255, 80);
+                ellipse(this.pos.x - this.size/4, this.pos.y - this.size/5, this.size/3, this.size/3);
+                
+                pop();
+            }
+        }
+        
+        // Ribbon class for falling ribbons
+        class Ribbon {
+            constructor() {
+                this.x = random(width);
+                this.y = -100;
+                this.length = random(30, 80);
+                this.width = random(5, 12);
+                this.speed = random(1, 3);
+                this.color = color(
+                    random(100, 255),
+                    random(100, 255),
+                    random(100, 255),
+                    200
+                );
+                this.rotation = random(TWO_PI);
+                this.rotationSpeed = random(-0.05, 0.05);
+                this.waviness = random(0.1, 0.3);
+                this.waveSpeed = random(0.05, 0.2);
+                this.waveOffset = random(TWO_PI);
+            }
+            
+            update() {
+                this.y += this.speed;
+                this.rotation += this.rotationSpeed;
+                this.waveOffset += this.waveSpeed;
+            }
+            
+            display() {
+                push();
+                translate(this.x, this.y);
+                rotate(this.rotation);
+                
+                noStroke();
+                fill(this.color);
+                
+                // Draw wavy ribbon
+                beginShape();
+                for (let i = 0; i < this.length; i += 5) {
+                    let xOffset = sin((i * 0.1) + this.waveOffset) * (this.width * this.waviness);
+                    let w = this.width * (1 - i/this.length * 0.5); // Ribbon gets slightly thinner
+                    vertex(xOffset - w/2, i);
+                    vertex(xOffset + w/2, i);
+                }
+                endShape(CLOSE);
+                
+                pop();
+            }
+        }
+        
+        // Confetti class
+        class Confetti {
+            constructor() {
+                this.reset();
+            }
+            
+            reset() {
+                this.pos = createVector(random(width), random(-100, -10));
+                this.vel = createVector(random(-1, 1), random(1, 3));
+                this.size = random(5, 10);
+                this.color = color(
+                    random(100, 255),
+                    random(100, 255),
+                    random(100, 255),
+                    200
+                );
+                this.rotation = random(TWO_PI);
+                this.rotationSpeed = random(-0.1, 0.1);
+                this.type = floor(random(3)); // 0: square, 1: circle, 2: triangle
+            }
+            
+            update() {
+                this.pos.add(this.vel);
+                this.rotation += this.rotationSpeed;
+                
+                // Add some gentle side-to-side movement
+                this.pos.x += sin(frameCount * 0.1 + this.pos.y * 0.05) * 0.3;
+                
+                // Gradually slow down falling speed
+                this.vel.y *= 0.995;
+            }
+            
+            display() {
+                push();
+                translate(this.pos.x, this.pos.y);
+                rotate(this.rotation);
+                noStroke();
+                fill(this.color);
+                
+                if (this.type === 0) {
+                    // Square
+                    rectMode(CENTER);
+                    rect(0, 0, this.size, this.size);
+                } else if (this.type === 1) {
+                    // Circle
+                    ellipse(0, 0, this.size);
+                } else {
+                    // Triangle
+                    triangle(
+                        0, -this.size/2,
+                        -this.size/2, this.size/2,
+                        this.size/2, this.size/2
+                    );
+                }
+                
+                pop();
+            }
+        }
+
+        // Start p5.js sketch
+        new p5(window);
+    </script>
+</body>
+</html>
